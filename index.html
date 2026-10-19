@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For My Jaanu 💗</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #291b3d;
+  color: white;
+  font-family: "Trebuchet MS", sans-serif;
+  text-align: center;
+}
+
+header {
+  padding: 18px;
+  color: #ffb7d5;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.game {
+  max-width: 760px;
+  margin: auto;
+  padding: 15px;
+}
+
+.scene {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(#9edcf5 0%, #e7c8f8 62%, #9fe5ba 62%);
+  border: 5px solid #ff9dc6;
+  border-radius: 18px;
+  min-height: 330px;
+  box-shadow: 0 0 30px #ff83bc55;
+}
+
+#world {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 22px;
+  background: #291b3de8;
+}
+
+.panel h1 { color: #ff9fc7; }
+
+.panel p {
+  line-height: 1.7;
+  max-width: 450px;
+}
+
+button {
+  border: none;
+  background: #ff72aa;
+  color: #391a36;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 12px;
+  padding: 12px 17px;
+  margin: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c94f87;
+}
+
+button:active { transform: translateY(3px); }
+
+#status {
+  color: #ffc1da;
+  font-weight: bold;
+  padding: 12px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 12px;
+}
+
+.letter {
+  background: #fff0f6;
+  color: #733452;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.8;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.hidden { display: none !important; }
+
+footer {
+  color: #cbb4e4;
+  padding: 20px;
+}
+</style>
+</head>
+
+<body>
+<header>♥ JAANU'S LOVE WORLD ♥</header>
+
+<div class="game">
+  <p>Made with love by your Gulab Jamun 🍓</p>
+
+  <div class="scene">
+    <canvas id="world" width="600" height="360"></canvas>
+
+    <div class="panel" id="intro">
+      <div style="font-size:50px">💗</div>
+      <h1>A WORLD FOR YOU</h1>
+      <p>
+        Hey, Jaanu! 🥹💕<br>
+        Your Gulab Jamun has a little adventure for you.
+        Collect all 5 hearts to unlock a special surprise.
+      </p>
+      <button onclick="startGame()">START OUR LOVE STORY ✨</button>
+    </div>
+
+    <div class="panel hidden" id="ending">
+      <div style="font-size:45px">💌</div>
+      <h1>YOU FOUND MY HEART!</h1>
+
+      <div class="letter">
+To my beautiful Jaanu, 💗
+
+If I could give you one thing in this world,
+I'd give you the ability to see yourself
+through my eyes.
+
+Then you'd understand just how special you are
+to me, and why even the smallest moments
+with you mean so much.
+
+You're not just someone I love.
+You're the person I want to make smile,
+the person I want beside me,
+and the person who makes my world brighter.
+
+No game could ever explain all my feelings,
+but I made this little world just for you.
+
+I love you, jaanu. More than these five hearts
+could ever show. 💗
+
+Forever yours,
+Your Gulab Jamun 🍓
+      </div>
+
+      <button onclick="startGame()">PLAY AGAIN 💕</button>
+    </div>
+  </div>
+
+  <div id="status">Collect 5 hearts to unlock your surprise! 💕</div>
+
+  <div class="controls">
+    <button onpointerdown="hold('left',event)"
+            onpointerup="release('left')"
+            onpointerleave="release('left')">⬅️</button>
+    <button onpointerdown="hold('up',event)"
+            onpointerup="release('up')"
+            onpointerleave="release('up')">⬆️</button>
+    <button onpointerdown="hold('down',event)"
+            onpointerup="release('down')"
+            onpointerleave="release('down')">⬇️</button>
+    <button onpointerdown="hold('right',event)"
+            onpointerup="release('right')"
+            onpointerleave="release('right')">➡️</button>
+  </div>
+
+  <p>Computer: use arrow keys or WASD to move.</p>
+</div>
+
+<footer>Made with a whole lot of love ♥</footer>
+
+<script>
+const canvas = document.getElementById("world");
+const ctx = canvas.getContext("2d");
+
+let player, hearts, collected, playing, keys, frame;
+
+function startGame() {
+  player = { x: 40, y: 260, size: 22 };
+  hearts = [
+    {x: 140, y: 100},
+    {x: 245, y: 270},
+    {x: 340, y: 125},
+    {x: 445, y: 250},
+    {x: 545, y: 100}
+  ];
+  collected = 0;
+  playing = true;
+  keys = {};
+  frame = 0;
+
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("ending").classList.add("hidden");
+  document.getElementById("status").textContent =
+    "Hearts collected: 0 / 5 💗";
+}
+
+function hold(dir, event) {
+  event.preventDefault();
+  keys[dir] = true;
+}
+
+function release(dir) {
+  keys[dir] = false;
+}
+
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+
+  if (["arrowup","arrowdown","arrowleft","arrowright"," "]
+      .includes(k)) e.preventDefault();
+
+  if (k === "arrowup" || k === "w") keys.up = true;
+  if (k === "arrowdown" || k === "s") keys.down = true;
+  if (k === "arrowleft" || k === "a") keys.left = true;
+  if (k === "arrowright" || k === "d") keys.right = true;
+});
+
+document.addEventListener("keyup", e => {
+  const k = e.key.toLowerCase();
+
+  if (k === "arrowup" || k === "w") keys.up = false;
+  if (k === "arrowdown" || k === "s") keys.down = false;
+  if (k === "arrowleft" || k === "a") keys.left = false;
+  if (k === "arrowright" || k === "d") keys.right = false;
+});
+
+function drawHeart(x, y, size, color) {
+  ctx.fillStyle = color;
+  ctx.font = `${size}px Arial`;
+  ctx.fillText("♥", x, y);
+}
+
+function drawWorld() {
+  ctx.clearRect(0, 0, 600, 360);
+
+  // Grass and dreamy hills
+  ctx.fillStyle = "#83d4a1";
+  ctx.fillRect(0, 223, 600, 137);
+
+  ctx.fillStyle = "#72c893";
+  ctx.beginPath();
+  ctx.ellipse(100, 230, 160, 45, 0, 0, Math.PI * 2);
+  ctx.ellipse(450, 235, 190, 48, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Clouds
+  ctx.fillStyle = "#fff7ff";
+  [[70,45],[260,65],[465,40]].forEach(([x,y]) => {
+    ctx.fillRect(x,y,55,15);
+    ctx.fillRect(x+12,y-10,30,15);
+  });
+
+  // Tiny cottage
+  ctx.fillStyle = "#ffe1c9";
+  ctx.fillRect(20, 170, 65, 55);
+  ctx.fillStyle = "#ed6fa8";
+  ctx.fillRect(12, 157, 82, 17);
+  ctx.fillStyle = "#9ddcf5";
+  ctx.fillRect(32, 184, 17, 17);
+  ctx.fillStyle = "#a66a72";
+  ctx.fillRect(57, 195, 16, 30);
+
+  // Flowers
+  for (let i = 0; i < 20; i++) {
+    const x = (i * 37 + 13) % 590;
+    const y = 250 + (i % 4) * 23;
+    ctx.fillStyle = "#318b59";
+    ctx.fillRect(x, y, 3, 9);
+    drawHeart(x, y, 9, i % 2 ? "#ff80b7" : "#fff0a3");
+  }
+
+  // Hearts to collect
+  hearts.forEach(h => {
+    if (!h.got) {
+      drawHeart(h.x, h.y + Math.sin(frame / 10 + h.x) * 4, 27, "#ff4f91");
+      drawHeart(h.x + 3, h.y - 2, 10, "#ffd4e7");
+    }
+  });
+
+  // Player: a tiny pixel-style sweetheart
+  const x = player.x, y = player.y;
+
+  ctx.fillStyle = "#57354e";
+  ctx.fillRect(x+3, y, 17, 8);
+  ctx.fillRect(x, y+5, 5, 10);
+  ctx.fillRect(x+18, y+5, 5, 10);
+
+  ctx.fillStyle = "#ffd0ac";
+  ctx.fillRect(x+4, y+7, 15, 12);
+
+  ctx.fillStyle = "#392845";
+  ctx.fillRect(x+7, y+11, 3, 3);
+  ctx.fillRect(x+14, y+11, 3, 3);
+
+  ctx.fillStyle = "#ff72aa";
+  ctx.fillRect(x+2, y+19, 19, 9);
+
+  ctx.fillStyle = "#684b88";
+  ctx.fillRect(x+4, y+28, 6, 5);
+  ctx.fillRect(x+14, y+28, 6, 5);
+
+  drawHeart(x+8, y-10, 12, "#ff4f91");
+
+  frame++;
+}
+
+function update() {
+  if (playing) {
+    const speed = 2.5;
+
+    if (keys.left) player.x -= speed;
+    if (keys.right) player.x += speed;
+    if (keys.up) player.y -= speed;
+    if (keys.down) player.y += speed;
+
+    player.x = Math.max(0, Math.min(577, player.x));
+    player.y = Math.max(80, Math.min(325, player.y));
+
+    hearts.forEach(h => {
+      if (!h.got &&
+          Math.abs(player.x - h.x) < 25 &&
+          Math.abs(player.y - h.y) < 25) {
+        h.got = true;
+        collected++;
+
+        document.getElementById("status").textContent =
+          `Hearts collected: ${collected} / 5 💗`;
+
+        if (collected === 5) {
+          playing = false;
+          document.getElementById("status").textContent =
+            "You collected every heart! Your surprise awaits 💌";
+          document.getElementById("ending").classList.remove("hidden");
+        }
+      }
+    });
+  }
+
+  drawWorld();
+  requestAnimationFrame(update);
+}
+
+player = {x:40, y:260, size:22};
+hearts = [];
+collected = 0;
+playing = false;
+keys = {};
+frame = 0;
+
+update();
+</script>
+</body>
+</html>
